@@ -1,11 +1,15 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+  _id: { 
+    type: String, 
+    default: () => new mongoose.Types.ObjectId().toString() // Ensures _id is stored as a string
+  },
   candidate: {
     type: String,
     required: [true, "कृपया एक उम्मीदवार चुनें"],
     enum: {
-      values: ["देवेश कांत सिंह(BJP)", "हन्नी वर्मा(RJD)", "इसमें से कोई नहीं"],
+      values: ["देवेश कांत सिंह (BJP)", "हन्नी वर्मा (RJD)", "इसमें से कोई नहीं"],
       message: "कृपया दिए गए विकल्पों में से एक वैध उम्मीदवार चुनें",
     },
   },
@@ -31,6 +35,14 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+// Ensure `_id` is always returned as a string in JSON responses
+userSchema.set("toJSON", {
+  transform: (doc, ret) => {
+    ret._id = ret._id.toString();
+    return ret;
+  }
 });
 
 const User = mongoose.model("User", userSchema);
